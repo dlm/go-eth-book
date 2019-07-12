@@ -18,7 +18,7 @@ func main() {
 		url = "http://localhost:8545"
 	}
 	_ = url
-	// client := gethbk.Client(url)
+	client := gethbk.Client(url)
 
 	accountHex := "0x71c7656ec7ab88b098defb751b7401b5f6d8976f"
 	if CONFIG == CONFIG_LOCAL {
@@ -29,4 +29,5 @@ func main() {
 	// gethbk.AccountsBalances(client, accountHex)
 	// gethbk.AccountsGeneratingNewWallets()
 	gethbk.AccountsKeystores()
+	getbk.AddressCheck(client)
 }
