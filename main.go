@@ -28,6 +28,6 @@ func main() {
 
 	// gethbk.AccountsBalances(client, accountHex)
 	// gethbk.AccountsGeneratingNewWallets()
-	gethbk.AccountsKeystores()
-	getbk.AddressCheck(client)
+	// gethbk.AccountsKeystores()
+	gethbk.AddressCheck(client)
 }

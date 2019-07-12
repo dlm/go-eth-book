@@ -11,6 +11,7 @@ import (
 	"golang.org/x/crypto/sha3"
 	"math"
 	"math/big"
+	"regexp"
 	"strings"
 )
 
@@ -123,4 +124,31 @@ func AccountsKeystores() {
 	importKeyStore("./wallets", password, exampleKeyStore())
 
 }
+
+func isEthAddress(address string) bool {
+	re := regexp.MustCompile("^0x[0-9a-fA-F]{40}$")
+	return re.MatchString(address)
+}
+
+func isContract(client *ethclient.Client, hex string) bool {
+	address := common.HexToAddress(hex)
+	bytecode, err := client.CodeAt(context.Background(), address, nil)
+	checkForError(err)
+	return len(bytecode) > 0
+}
+
+func AddressCheck(client *ethclient.Client) {
+	valid := "0x323b5d4c32345ced77393b3530b1eed0f346429d"
+	logInfo("is valid:", isEthAddress(valid))
+
+	invalid := "0xZYXb5d4c32345ced77393b3530b1eed0f346429d"
+	logInfo("is valid:", isEthAddress(invalid))
+
+	contract := "0xe41d2489571d322189246dafa5ebde1f4699f498"
+	logInfo("is contract:", isContract(client, contract))
+
+	account := "0x8e215d06ea7ec1fdb4fc5fd21768f4b34ee92ef4"
+	logInfo("is contract:", isContract(client, account))
+}
+
 
