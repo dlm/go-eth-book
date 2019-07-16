@@ -35,4 +35,7 @@ func main() {
 	gethbk.AccountsGeneratingNewWallets()
 	gethbk.AccountsKeystores()
 	gethbk.AddressCheck(client)
+
+	gethbk.TransactionsQueryingBlocks(client)
+	gethbk.TransactionsQueryingTransactions(client)
 }
