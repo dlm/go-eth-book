@@ -151,4 +151,45 @@ func AddressCheck(client *ethclient.Client) {
 	logInfo("is contract:", isContract(client, account))
 }
 
+func AddressPlay(client *ethclient.Client) string {
+	password := "secret"
+	dir := "./wallets"
+
+	// create the keystore and grab the wallet
+	ks := newKeyStore(dir)
+	if len(ks.Wallets()) != 1 {
+		panic("Unexpected number of wallets")
+	}
+	wallet := ks.Wallets()[0]
+	status, _ := wallet.Status()
+	logInfo(status, len(wallet.Accounts()))
+
+	if len(wallet.Accounts()) != 1 {
+		panic("Unexpected number of accounts")
+	}
+	account := wallet.Accounts()[0]
+	expectedHex := "0x0eeEabE10a62D7D7C3e7f31Fb9B0eCD9455F279b"
+	logInfo(account.Address.Hex())
+	logInfo("  ===> expected", expectedHex)
+
+	// unlock the account in the wallet (which unlocks the account)
+	ks.Unlock(account, password)
+	status, _ = wallet.Status()
+	logInfo(status, len(wallet.Accounts()))
+
+	// get the balance
+	balance, err := client.BalanceAt(context.Background(), account.Address, nil)
+	checkForError(err)
+	ethValue := gweiToWei(balance)
+	logInfo(ethValue)
+
+	// get the private key
+	keyJson, err :=  ks.Export(account, password, password)
+	privateKey, err := keystore.DecryptKey(keyJson, password)
+	checkForError(err)
+
+	key := Wallet{privateKey.PrivateKey}
+	return key.PrivateAsString()
+}
+
 

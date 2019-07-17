@@ -2,8 +2,10 @@ package gethbk
 
 import (
 	"math/big"
+	"crypto/ecdsa"
 	"context"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -126,4 +128,38 @@ func TransactionsQueryingTransactions(client *ethclient.Client) {
 	txHex := "0x5d49fcaa394c97ec8a9c3e7bd9e8388d420fb050a52083ca52ff24b3b65bc9c2"
 	queryTransactionByHex(client, txHex)
 
+}
+
+func TransactionsTransferringETH(client *ethclient.Client, privateKeyHex string) {
+	privateKey, err := crypto.HexToECDSA(privateKeyHex)
+	checkForError(err)
+
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	checkOk(ok, "cannot assert type: publicKey is not of type *ecdsa.PublicKey")
+
+	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+
+	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
+	checkForError(err)
+
+	value := big.NewInt(1000000000000000000)
+	gasLimit := uint64(21000)
+	gasPrice, err := client.SuggestGasPrice(context.Background())
+	checkForError(err)
+
+	toHex := "0x4592d8f8d7b001e72cb26a73e4fa1806a51ac79d"
+	toAddress := common.HexToAddress(toHex)
+	tx := types.NewTransaction(nonce, toAddress, value, gasLimit, gasPrice, nil)
+
+	chainID, err := client.NetworkID(context.Background())
+	checkForError(err)
+
+	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
+	checkForError(err)
+
+	err = client.SendTransaction(context.Background(), signedTx)
+	checkForError(err)
+
+	logInfo("tx sent: %s", signedTx.Hash().Hex())
 }

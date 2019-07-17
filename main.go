@@ -11,7 +11,8 @@ const CONFIG_MAINNET string = "CONFIG_MAINNET"
 const CONFIG string = CONFIG_MAINNET
 
 func url(config string) string {
-	address := "https://mainnet.infura.io/v3/c540c4fe10614f27a05a22bd463f0996"
+	// address := "https://mainnet.infura.io/v3/c540c4fe10614f27a05a22bd463f0996"
+	address := "https://rinkeby.infura.io/v3/c540c4fe10614f27a05a22bd463f0996"
 	if config == CONFIG_LOCAL {
 		address = "http://localhost:8545"
 	}
@@ -31,11 +32,14 @@ func main() {
 
 	client := gethbk.Client(url(CONFIG))
 
-	gethbk.AccountsBalances(client, accountHex(CONFIG))
-	gethbk.AccountsGeneratingNewWallets()
-	gethbk.AccountsKeystores()
-	gethbk.AddressCheck(client)
+	// gethbk.AccountsBalances(client, accountHex(CONFIG))
+	// gethbk.AccountsGeneratingNewWallets()
+	// gethbk.AccountsKeystores()
+	// gethbk.AddressCheck(client)
+	privateKeyHex := gethbk.AddressPlay(client)
+	_ = privateKeyHex
 
-	gethbk.TransactionsQueryingBlocks(client)
-	gethbk.TransactionsQueryingTransactions(client)
+	// gethbk.TransactionsQueryingBlocks(client)
+	// gethbk.TransactionsQueryingTransactions(client)
+	// gethbk.TransactionsTransferringETH(client, privateKeyHex)
 }
