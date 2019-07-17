@@ -31,15 +31,16 @@ func main() {
 	log.Println("Running with configuration ", CONFIG)
 
 	client := gethbk.Client(url(CONFIG))
+	_ = client
 
 	// gethbk.AccountsBalances(client, accountHex(CONFIG))
 	// gethbk.AccountsGeneratingNewWallets()
 	// gethbk.AccountsKeystores()
 	// gethbk.AddressCheck(client)
-	privateKeyHex := gethbk.AddressPlay(client)
-	_ = privateKeyHex
+	// privateKeyHex := gethbk.AddressPlay(client)
 
 	// gethbk.TransactionsQueryingBlocks(client)
 	// gethbk.TransactionsQueryingTransactions(client)
 	// gethbk.TransactionsTransferringETH(client, privateKeyHex)
+	// gethbk.TransactionsSubscribingToNewBlocks()
 }

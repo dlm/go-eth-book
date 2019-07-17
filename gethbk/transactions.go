@@ -1,16 +1,14 @@
 package gethbk
 
 import (
-	"math/big"
-	"crypto/ecdsa"
 	"context"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/core/types"
+	"crypto/ecdsa"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethclient"
+	"math/big"
 )
-
-
 
 func getHeader(client *ethclient.Client, blockNumber *big.Int) *types.Header {
 	header, err := client.HeaderByNumber(context.Background(), blockNumber)
@@ -63,7 +61,6 @@ func logTransaction(tx *types.Transaction) {
 	logInfo("To:", tx.To().Hex())
 }
 
-
 func getMessage(client *ethclient.Client, tx *types.Transaction) *types.Message {
 	chainID, err := client.NetworkID(context.Background())
 	checkForError(err)
@@ -102,7 +99,7 @@ func iterateOverTransactions(client *ethclient.Client, hex string) {
 	blockHash := common.HexToHash(hex)
 	count, err := client.TransactionCount(context.Background(), blockHash)
 	checkForError(err)
-	for idx := uint(0); idx < count ; idx++ {
+	for idx := uint(0); idx < count; idx++ {
 		tx, err := client.TransactionInBlock(context.Background(), blockHash, idx)
 		checkForError(err)
 		logInfo(idx, tx.Hash().Hex())
@@ -162,4 +159,25 @@ func TransactionsTransferringETH(client *ethclient.Client, privateKeyHex string)
 	checkForError(err)
 
 	logInfo("tx sent: %s", signedTx.Hash().Hex())
+}
+
+func TransactionsSubscribingToNewBlocks() {
+	client, err := ethclient.Dial("wss://ropsten.infura.io/ws")
+	checkForError(err)
+
+	headers := make(chan *types.Header)
+	sub, err :=client.SubscribeNewHead(context.Background(), headers)
+	checkForError(err)
+	for {
+		select {
+		case err := <-sub.Err():
+			logFatal(err)
+		case header := <-headers:
+			logInfo("-----------------------New Block--------------------")
+			logInfo(header.Hash().Hex())
+			block, err := client.BlockByHash(context.Background(), header.Hash())
+			checkForError(err)
+			logBlock(block)
+		}
+	}
 }
