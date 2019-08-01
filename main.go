@@ -43,4 +43,8 @@ func main() {
 	// gethbk.TransactionsQueryingTransactions(client)
 	// gethbk.TransactionsTransferringETH(client, privateKeyHex)
 	// gethbk.TransactionsSubscribingToNewBlocks()
+
+	// gethbk.SmartContractsDeploy(client, privateKeyHex)
+	store := gethbk.SmartContractsLoad(client)
+	gethbk.SmartContractsQuery(client, store)
 }
